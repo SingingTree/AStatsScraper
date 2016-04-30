@@ -18,12 +18,8 @@ def parse_app_page(response):
         'points': points,
         }
 
-def parse_search_result(response):
+def parse_search_result_for_apps(response):
     for href in response.xpath('//table//table//a/@href'):
         relative_url = href.extract()
         if relative_url.startswith('Steam_Game_Info.php?AppID='):
-            full_url = response.urljoin(relative_url)
-            self.logger.debug(full_url)
-            yield scrapy.Request(full_url, callback=self.parse_game_stats)
-        else:
-            self.logger.debug('Link ignored ' + relative_url)
+            yield relative_url[:len('Steam_Game_Info.php?AppID=')]
