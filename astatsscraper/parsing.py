@@ -24,5 +24,5 @@ def parse_search_result_for_apps(response):
         relative_url = href.extract()
         if relative_url.startswith('Steam_Game_Info.php?AppID='):
             yield {
-                'app_id' : relative_url[len('Steam_Game_Info.php?AppID='):]
+                'app_id': relative_url[len('Steam_Game_Info.php?AppID='):]
             }
