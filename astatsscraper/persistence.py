@@ -9,7 +9,7 @@ class Persistor:
     def init_database(self):
         self.cursor.execute('''CREATE TABLE steam_apps(
                                  app_id INTEGER,
-                                 name VARCHAR(255),
+                                 title VARCHAR(255),
                                  time_to_100 FLOAT,
                                  total_points FLOAT
                                )''')

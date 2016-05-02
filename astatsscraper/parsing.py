@@ -1,4 +1,8 @@
+import steamappitem
+
 def parse_app_page(response):
+    # Extract app id from URL
+    app_id = response.url[len('http://astats.astats.nl/astats/Steam_Game_Info.php?AppID='):]
     # Should always be able to grab a title
     title = response.xpath('//div[@class = "panel panel-default panel-gameinfo"]/div[@class = "panel-heading"]/text()').extract()[0].strip()
     # Parse times into floats
@@ -12,11 +16,12 @@ def parse_app_page(response):
     else:
         points = int(points[0].strip())
 
-    yield {
+    yield steamappitem.SteamappItem({
+        'id': app_id,
         'title': title,
-        'time to 100%': time_to_hundo,
-        'points': points,
-        }
+        'time_to_100': time_to_hundo,
+        'total_points': points,
+        })
 
 
 def parse_search_result_for_apps(response):
