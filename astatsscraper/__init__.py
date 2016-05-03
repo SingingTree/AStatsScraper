@@ -1,1 +1,1 @@
-from steamappspider import SteamAppSpider
+from astatsscraper.spiders.steamappspider import SteamAppSpider

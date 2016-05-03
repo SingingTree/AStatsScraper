@@ -1,4 +1,4 @@
-import steamappitem
+import items
 
 def parse_app_page(response):
     # Extract app id from URL
@@ -16,7 +16,7 @@ def parse_app_page(response):
     else:
         points = int(points[0].strip())
 
-    yield steamappitem.SteamappItem({
+    yield items.SteamappItem({
         'id': app_id,
         'title': title,
         'time_to_100': time_to_hundo,

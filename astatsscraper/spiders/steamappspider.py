@@ -1,5 +1,6 @@
 import scrapy
-import parsing
+from scrapy.settings.default_settings import ITEM_PIPELINES
+import astatsscraper.parsing
 
 # Info on spiders with args:
 # http://doc.scrapy.org/en/latest/topics/spiders.html#spider-arguments
@@ -16,5 +17,5 @@ class SteamAppSpider(scrapy.Spider):
         self.start_urls = [A_STATS_APP_URL_BASE + str(app_id)]
 
     def parse(self, response):
-        return parsing.parse_app_page(response)
+        return astatsscraper.parsing.parse_app_page(response)
 
