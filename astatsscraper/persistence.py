@@ -16,10 +16,22 @@ class Persistor:
     def ensure_tables(self):
         print("ENSURING TABLES")
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS steam_apps(
-                                 app_id INTEGER PRIMARY KEY,
+                                 app_id INTEGER,
                                  title VARCHAR(255),
                                  time_to_100 FLOAT,
-                                 total_points FLOAT
+                                 total_points FLOAT,
+                                 PRIMARY KEY (app_id)
+                               );''')
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS users(
+                                 steam_id INTEGER,
+                                 PRIMARY KEY (steam_id)
+                               );''')
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS owned_app(
+                                 steam_id INTEGER,
+                                 app_id INTEGER,
+                                 PRIMARY KEY (steam_id, app_id),
+                                 FOREIGN KEY (steam_id) REFERENCES users(steam_id)
+                                 FOREIGN KEY (app_id) REFERENCES steam_apps(app_id)
                                );''')
 
     def store_app(self, app_item):
