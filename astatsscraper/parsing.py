@@ -31,3 +31,14 @@ def parse_search_result_for_apps(response):
             yield {
                 'app_id': relative_url[len('Steam_Game_Info.php?AppID='):]
             }
+
+
+def parse_owned_games_for_apps(response):
+    relative_url_app_prefix = 'User_Achievements_Per_Game.php?AppID='
+    relative_url_owner_prefix = 'SteamID64='
+    for href in response.xpath('//table//table//a/@href'):
+        relative_url = href.extract()
+        if relative_url.startswith(relative_url_app_prefix):
+            yield {
+                'app_id': relative_url[len(relative_url_app_prefix):relative_url.find(relative_url_owner_prefix) - 1]
+            }
