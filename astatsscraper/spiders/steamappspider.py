@@ -13,7 +13,7 @@ class SteamAppSpider(scrapy.Spider):
     name = 'SteamAppSpider'
     pipeline = [astatsscraper.pipelines.SteamAppPipeline]
 
-    def __init__(self, app_id, *args, **kwargs):
+    def __init__(self, app_id, steam_id=None, *args, **kwargs):
         super(SteamAppSpider, self).__init__(*args, **kwargs)
 
         self.start_urls = [A_STATS_APP_URL_BASE + str(app_id)]

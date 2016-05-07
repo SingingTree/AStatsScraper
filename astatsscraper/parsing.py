@@ -39,6 +39,7 @@ def parse_owned_games_for_apps(response):
     for href in response.xpath('//table//table//a/@href'):
         relative_url = href.extract()
         if relative_url.startswith(relative_url_app_prefix):
-            yield {
+            yield items.OwnedAppItem({
+                'owner_id': relative_url[relative_url.find(relative_url_owner_prefix) + len('SteamID64='):],
                 'app_id': relative_url[len(relative_url_app_prefix):relative_url.find(relative_url_owner_prefix) - 1]
-            }
+            })

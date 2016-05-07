@@ -6,7 +6,6 @@ class Persistor:
         self.connection = sqlite3.connect('astatsscraper.db')
         self.cursor = self.connection.cursor()
         # Maybe find a better way than ensuring each time
-        self.ensure_tables()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -35,14 +34,35 @@ class Persistor:
                                );''')
 
     def store_app(self, app_item):
-        print("STORING APP")
         self.cursor.execute('''INSERT OR REPLACE INTO steam_apps (app_id, title, time_to_100, total_points)
                                 VALUES (?, ?, ?, ?);''',
                             (
                                 app_item.get('id'),
                                 app_item.get('title'),
                                 app_item.get('time_to_100'),
-                                app_item.get('total_points')
+                                app_item.get('total_points'),
+                            ))
+        self.connection.commit()
+
+    def store_ownership(self, owned_app_item):
+        self.cursor.execute('''INSERT OR IGNORE INTO steam_apps (app_id, title, time_to_100, total_points)
+                                VALUES (?, ?, ?, ?);''',
+                            (
+                                owned_app_item.get('app_id'),
+                                None,
+                                None,
+                                None
+                            ))
+        self.cursor.execute('''INSERT OR IGNORE INTO users (steam_id)
+                               VALUES (?);''',
+                            (
+                                owned_app_item.get('owner_id'),
+                            ))
+        self.cursor.execute('''INSERT OR IGNORE INTO owned_app (steam_id, app_id)
+                               VALUES (?, ?);''',
+                            (
+                                owned_app_item.get('owner_id'),
+                                owned_app_item.get('app_id'),
                             ))
         self.connection.commit()
 

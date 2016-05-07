@@ -11,7 +11,7 @@ A_STATS_OWNED_GAMES_URL_BASE = 'http://astats.astats.nl/astats/User_Games.php?SP
 
 class OwnedGamesSpider(scrapy.Spider):
     name = 'OwnedGamesSpider'
-    pipeline = []
+    pipeline = [astatsscraper.pipelines.AppOwnerPipeline]
 
     def __init__(self, steam_id, *args, **kwargs):
         super(OwnedGamesSpider, self).__init__(*args, **kwargs)
