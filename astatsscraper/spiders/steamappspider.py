@@ -13,10 +13,12 @@ class SteamAppSpider(scrapy.Spider):
     name = 'SteamAppSpider'
     pipeline = [astatsscraper.pipelines.SteamAppPipeline]
 
-    def __init__(self, app_id, steam_id=None, *args, **kwargs):
+    def __init__(self, app_ids, steam_id=None, *args, **kwargs):
         super(SteamAppSpider, self).__init__(*args, **kwargs)
-
-        self.start_urls = [A_STATS_APP_URL_BASE + str(app_id)]
+        if isinstance(app_ids, list):
+            self.start_urls = [A_STATS_APP_URL_BASE + str(id) for id in app_ids]
+        else:
+            self.start_urls = [A_STATS_APP_URL_BASE + str(app_ids)]
 
     def parse(self, response):
         return astatsscraper.parsing.parse_app_page(response)

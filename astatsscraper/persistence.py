@@ -38,6 +38,12 @@ class Persistor:
                                );''')
 
     def store_app(self, app_item):
+        if app_item.get('total_points') == 0:
+            points_per_time = 0
+        elif app_item.get('time_to_100') == 0:
+            points_per_time = None
+        else:
+            points_per_time = app_item.get('total_points') / app_item.get('time_to_100')
         self.cursor.execute('''INSERT OR REPLACE INTO steam_apps (app_id, title, time_to_100, total_points,
                                points_per_time, last_updated)
                                 VALUES (?, ?, ?, ?, ?, ?);''',
@@ -46,7 +52,7 @@ class Persistor:
                                 app_item.get('title'),
                                 app_item.get('time_to_100'),
                                 app_item.get('total_points'),
-                                app_item.get('total_points') / app_item.get('time_to_100'),
+                                points_per_time,
                                 datetime.datetime.now(),
                             ))
         self.connection.commit()
