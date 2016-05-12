@@ -32,6 +32,8 @@ class Persistor:
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS owned_app(
                                  steam_id INTEGER,
                                  app_id INTEGER,
+                                 number_achieved INTEGER,
+                                 percentage_achieved INTEGER,
                                  PRIMARY KEY (steam_id, app_id),
                                  FOREIGN KEY (steam_id) REFERENCES users(steam_id),
                                  FOREIGN KEY (app_id) REFERENCES steam_apps(app_id)
