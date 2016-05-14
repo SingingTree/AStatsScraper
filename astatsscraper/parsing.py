@@ -41,8 +41,9 @@ def parse_search_result_for_apps(response):
 def parse_owned_games_for_apps(response):
     relative_url_app_prefix = 'User_Achievements_Per_Game.php?AppID='
     relative_url_owner_prefix = 'SteamID64='
-    for href in response.xpath('//table//table//a/@href'):
-        relative_url = href.extract()
+    for table_row in response.xpath('//table//table[td/@align="left"]//tr'):
+        href = table_row.xpath('a/@href')
+        relative_url = href.extract_first()
         if relative_url.startswith(relative_url_app_prefix):
             yield items.OwnedAppItem({
                 'owner_id': relative_url[relative_url.find(relative_url_owner_prefix) + len('SteamID64='):],
