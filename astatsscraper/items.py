@@ -11,3 +11,4 @@ class OwnedAppItem(scrapy.Item):
     owner_id = scrapy.Field()
     app_id = scrapy.Field()
     number_achieved = scrapy.Field()
+    percentage_achieved = scrapy.Field()

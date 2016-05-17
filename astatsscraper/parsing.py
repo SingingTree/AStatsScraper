@@ -41,13 +41,18 @@ def parse_search_result_for_apps(response):
 def parse_owned_games_for_apps(response):
     relative_url_app_prefix = 'User_Achievements_Per_Game.php?AppID='
     relative_url_owner_prefix = 'SteamID64='
-    for table_row in response.xpath('//table//table[td/@align="left"]//tr'):
-        number_achieved = table_row.xpath('td/p/font/text()').extract_first()
-        href = table_row.xpath('a/@href')
+    for table_cell in response.xpath('//table//table[td/@align="left"]'):
+        number_achieved = table_cell.xpath('tr/td/p/font/text()').extract_first()
+        percentage_achieved = table_cell.xpath('td/p/font/text()').extract_first()
+        href = table_cell.xpath('tr/a/@href')
         relative_url = href.extract_first()
         if relative_url.startswith(relative_url_app_prefix):
             yield items.OwnedAppItem({
                 'owner_id': relative_url[relative_url.find(relative_url_owner_prefix) + len('SteamID64='):],
+                # Find url and trim prefix
                 'app_id': relative_url[len(relative_url_app_prefix):relative_url.find(relative_url_owner_prefix) - 1],
+                # Find percentage and trim '%' char
+                'percentage_achieved': int(percentage_achieved.split(' ')[-1][:-1]),
+                # Find number achieved out of total
                 'number_achieved': int(number_achieved.split(' ')[0])
             })
