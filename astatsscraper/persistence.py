@@ -78,12 +78,14 @@ class Persistor:
                                 owned_app_item.get('owner_id'),
                                 datetime.datetime.now()
                             ))
-        self.cursor.execute('''INSERT OR REPLACE INTO owned_app (steam_id, app_id, number_achieved, last_updated)
-                               VALUES (?, ?, ?, ?);''',
+        self.cursor.execute('''INSERT OR REPLACE INTO owned_app (steam_id, app_id, number_achieved,
+                               percentage_achieved, last_updated)
+                               VALUES (?, ?, ?, ?, ?);''',
                             (
                                 owned_app_item.get('owner_id'),
                                 owned_app_item.get('app_id'),
                                 owned_app_item.get('number_achieved'),
+                                owned_app_item.get('percentage_achieved'),
                                 datetime.datetime.now(),
                             ))
         self.connection.commit()
