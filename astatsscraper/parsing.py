@@ -26,6 +26,11 @@ def parse_app_page(response):
         num_players = 0
     else:
         num_players = int(num_players.strip())
+    num_players_to_hundo = response.xpath('//table[@class = "Default1000"]/tr/td[span = "Players 100%"]/text()[last()]').extract_first()
+    if not num_players_to_hundo:
+        num_players_to_hundo = 0
+    else:
+        num_players_to_hundo = int(num_players_to_hundo.strip())
 
     yield items.SteamappItem({
         'id': app_id,
@@ -33,6 +38,7 @@ def parse_app_page(response):
         'time_to_100': time_to_hundo,
         'total_points': points,
         'num_players': num_players,
+        'num_players_to_100': num_players_to_hundo,
         })
 
 

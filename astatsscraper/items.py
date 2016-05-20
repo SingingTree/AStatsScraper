@@ -6,6 +6,7 @@ class SteamappItem(scrapy.Item):
     time_to_100 = scrapy.Field()
     total_points = scrapy.Field()
     num_players = scrapy.Field()
+    num_players_to_100 = scrapy.Field()
 
 class OwnedAppItem(scrapy.Item):
     owner_id = scrapy.Field()
