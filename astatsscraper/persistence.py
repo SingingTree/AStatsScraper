@@ -21,6 +21,8 @@ class Persistor:
                                  time_to_100 FLOAT,
                                  total_points FLOAT,
                                  points_per_time FLOAT,
+                                 num_players INTEGER,
+                                 num_players_to_100 INTEGER,
                                  last_updated DATE,
                                  PRIMARY KEY (app_id)
                                );''')
@@ -29,7 +31,7 @@ class Persistor:
                                  last_updated DATE,
                                  PRIMARY KEY (steam_id)
                                );''')
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS owned_app(
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS owned_apps(
                                  steam_id INTEGER,
                                  app_id INTEGER,
                                  number_achieved INTEGER,
@@ -48,24 +50,28 @@ class Persistor:
         else:
             points_per_time = app_item.get('total_points') / app_item.get('time_to_100')
         self.cursor.execute('''INSERT OR REPLACE INTO steam_apps (app_id, title, time_to_100, total_points,
-                               points_per_time, last_updated)
-                                VALUES (?, ?, ?, ?, ?, ?);''',
+                               points_per_time, num_players, num_players_to_100, last_updated)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?);''',
                             (
                                 app_item.get('id'),
                                 app_item.get('title'),
                                 app_item.get('time_to_100'),
                                 app_item.get('total_points'),
                                 points_per_time,
+                                app_item.get('num_players'),
+                                app_item.get('num_players_to_100'),
                                 datetime.datetime.now(),
                             ))
         self.connection.commit()
 
     def store_ownership(self, owned_app_item):
         self.cursor.execute('''INSERT OR IGNORE INTO steam_apps (app_id, title, time_to_100, total_points,
-                               points_per_time, last_updated)
-                                VALUES (?, ?, ?, ?, ?, ?);''',
+                               points_per_time, num_players, num_player_to_100, last_updated)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?);''',
                             (
                                 owned_app_item.get('app_id'),
+                                None,
+                                None,
                                 None,
                                 None,
                                 None,
@@ -78,7 +84,7 @@ class Persistor:
                                 owned_app_item.get('owner_id'),
                                 datetime.datetime.now()
                             ))
-        self.cursor.execute('''INSERT OR REPLACE INTO owned_app (steam_id, app_id, number_achieved,
+        self.cursor.execute('''INSERT OR REPLACE INTO owned_apps (steam_id, app_id, number_achieved,
                                percentage_achieved, last_updated)
                                VALUES (?, ?, ?, ?, ?);''',
                             (
@@ -91,7 +97,7 @@ class Persistor:
         self.connection.commit()
 
     def get_owned_app_ids(self, owner_id):
-        self.cursor.execute('SELECT app_id FROM owned_app WHERE steam_id=?', (owner_id,))
+        self.cursor.execute('SELECT app_id FROM owned_apps WHERE steam_id=?', (owner_id,))
         values = self.cursor.fetchall()
         ids = [id for (id,) in values]
         return ids
