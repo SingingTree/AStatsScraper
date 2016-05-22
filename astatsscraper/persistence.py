@@ -1,3 +1,4 @@
+from __future__ import division
 import sqlite3
 import datetime
 
@@ -23,6 +24,7 @@ class Persistor:
                                  points_per_time FLOAT,
                                  num_players INTEGER,
                                  num_players_to_100 INTEGER,
+                                 percentage_of_players_to_100 FLOAT,
                                  last_updated DATE,
                                  PRIMARY KEY (app_id)
                                );''')
@@ -49,9 +51,14 @@ class Persistor:
             points_per_time = None
         else:
             points_per_time = app_item.get('total_points') / app_item.get('time_to_100')
+        if app_item.get('num_players') == 0:
+            percentage_to_hundo = 0
+        else:
+            percentage_to_hundo = app_item.get('num_players_to_100') / app_item.get('num_players')
         self.cursor.execute('''INSERT OR REPLACE INTO steam_apps (app_id, title, time_to_100, total_points,
-                               points_per_time, num_players, num_players_to_100, last_updated)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?);''',
+                               points_per_time, num_players, num_players_to_100, percentage_of_players_to_100,
+                               last_updated)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);''',
                             (
                                 app_item.get('id'),
                                 app_item.get('title'),
@@ -60,6 +67,7 @@ class Persistor:
                                 points_per_time,
                                 app_item.get('num_players'),
                                 app_item.get('num_players_to_100'),
+                                percentage_to_hundo,
                                 datetime.datetime.now(),
                             ))
         self.connection.commit()
