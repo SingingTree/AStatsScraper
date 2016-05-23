@@ -1,5 +1,4 @@
 import scrapy
-from scrapy.settings.default_settings import ITEM_PIPELINES
 import astatsscraper.parsing
 import astatsscraper.pipelines
 
