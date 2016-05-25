@@ -51,6 +51,11 @@ def parse_search_result_for_apps(response):
             }
 
 
+def parse_search_result_for_next_page(response):
+    next_page = response.xpath('//table[@class="Pager"]//ul[@class="pagination"]/li/a[text()=">"]/@href').extract_first()
+    return next_page
+
+
 def parse_owned_games_for_apps(response):
     relative_url_app_prefix = 'User_Achievements_Per_Game.php?AppID='
     relative_url_owner_prefix = 'SteamID64='
