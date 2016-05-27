@@ -1,3 +1,5 @@
+import scrapy
+import urlparse
 import items
 
 def parse_app_page(response):
@@ -52,8 +54,15 @@ def parse_search_result_for_apps(response):
 
 
 def parse_search_result_for_next_page(response):
-    next_page = response.xpath('//table[@class="Pager"]//ul[@class="pagination"]/li/a[text()=">"]/@href').extract_first()
-    return next_page
+    return response.xpath('//table[@class="Pager"]//ul[@class="pagination"]/li/a[text()=">"]/@href').extract_first()
+
+
+def parse_search_result_for_apps_recursive(response):
+    # itertools.chain generators for each page, use them to read app data
+    next_page_url = urlparse.urljoin(response.url, parse_search_result_for_next_page(response))
+    yield parse_search_result_for_apps(response)
+    if next_page_url:
+        yield scrapy.Request(next_page_url, parse_search_result_for_apps_recursive)
 
 
 def parse_owned_games_for_apps(response):

@@ -9,6 +9,4 @@ class AllAppsSpider(scrapy.Spider):
     start_urls = ['http://astats.astats.nl/astats/Steam_Games.php?DisplayType=All']
 
     def parse(self, response):
-        #itertools.chain generators for each page, use them to read app data
-        next_page = astatsscraper.parsing.parse_search_result_for_next_page(response)
-        return astatsscraper.parsing.parse_search_result_for_apps(response)
+        return astatsscraper.parsing.parse_search_result_for_apps_recursive(response)
