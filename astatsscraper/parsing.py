@@ -60,7 +60,8 @@ def parse_search_result_for_next_page(response):
 def parse_search_result_for_apps_recursive(response):
     # itertools.chain generators for each page, use them to read app data
     next_page_url = urlparse.urljoin(response.url, parse_search_result_for_next_page(response))
-    yield parse_search_result_for_apps(response)
+    for app in parse_search_result_for_apps(response):
+        yield app
     if next_page_url:
         yield scrapy.Request(next_page_url, parse_search_result_for_apps_recursive)
 
