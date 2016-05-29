@@ -54,12 +54,11 @@ def parse_search_result_for_apps(response):
 
 
 def parse_search_result_for_next_page(response):
-    return response.xpath('//table[@class="Pager"]//ul[@class="pagination"]/li/a[text()=">"]/@href').extract_first()
+    return urlparse.urljoin(response.url, response.xpath('//table[@class="Pager"]//ul[@class="pagination"]/li/a[text()=">"]/@href').extract_first())
 
 
 def parse_search_result_for_apps_recursive(response):
-    # itertools.chain generators for each page, use them to read app data
-    next_page_url = urlparse.urljoin(response.url, parse_search_result_for_next_page(response))
+    next_page_url = parse_search_result_for_next_page(response)
     for app in parse_search_result_for_apps(response):
         yield app
     if next_page_url:
