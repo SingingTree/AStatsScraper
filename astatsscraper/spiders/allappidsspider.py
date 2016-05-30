@@ -3,9 +3,9 @@ import astatsscraper.parsing
 import astatsscraper.pipelines
 
 
-class AllAppsSpider(scrapy.Spider):
+class AllAppIdsSpider(scrapy.Spider):
     name = 'AllAppsSpider'
-    pipeline = []
+    pipeline = [astatsscraper.pipelines.AppIdOnlyPipeline]
     start_urls = ['http://astats.astats.nl/astats/Steam_Games.php?DisplayType=All']
 
     def parse(self, response):

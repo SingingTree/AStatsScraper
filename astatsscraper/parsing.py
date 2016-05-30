@@ -48,9 +48,9 @@ def parse_search_result_for_apps(response):
     for href in response.xpath('//table//table//a/@href'):
         relative_url = href.extract()
         if relative_url.startswith('Steam_Game_Info.php?AppID='):
-            yield {
-                'app_id': relative_url[len('Steam_Game_Info.php?AppID='):]
-            }
+            yield items.SteamappItem({
+                'id': relative_url[len('Steam_Game_Info.php?AppID='):]
+            })
 
 
 def parse_search_result_for_next_page(response):

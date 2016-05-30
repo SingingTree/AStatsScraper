@@ -2,7 +2,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
 import spiders.ownedgamesspider
 import spiders.steamappspider
-import spiders.allappspider
+import spiders.allappidsspider
 import persistence
 
 
@@ -42,5 +42,5 @@ def scrape_owned_games(steam_id):
 def scrape_all_games():
     """Scrapes all games from astats."""
     process = CrawlerProcess(get_project_settings())
-    process.crawl(spiders.allappspider.AllAppsSpider)
+    process.crawl(spiders.allappidsspider.AllAppIdsSpider)
     process.start()

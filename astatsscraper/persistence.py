@@ -104,9 +104,26 @@ class Persistor:
                             ))
         self.connection.commit()
 
+    def store_app_id(self, app_item):
+        self.cursor.execute('''INSERT OR REPLACE INTO steam_apps (app_id, title, time_to_100, total_points,
+                               points_per_time, num_players, num_players_to_100, percentage_of_players_to_100,
+                               last_updated)
+                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);''',
+                            (
+                                app_item.get('id'),
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                None,
+                                datetime.datetime.now(),
+                            ))
+        self.connection.commit()
+
     def get_owned_app_ids(self, owner_id):
         self.cursor.execute('SELECT app_id FROM owned_apps WHERE steam_id=?', (owner_id,))
         values = self.cursor.fetchall()
         ids = [id for (id,) in values]
         return ids
-
