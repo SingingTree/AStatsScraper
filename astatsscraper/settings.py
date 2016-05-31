@@ -7,4 +7,9 @@ ITEM_PIPELINES = {
     'astatsscraper.pipelines.AppOwnerPipeline': 3
 }
 
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware': 0,
+}
+
+ROBOTSTXT_OBEY = True
 DOWNLOAD_DELAY = 0.25 # 250 ms of delay
