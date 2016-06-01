@@ -14,7 +14,7 @@ def scrape_game_ownership(steam_id):
         steam_id (str | int): steam id of the user to scrape ownership for.
     """
     process = CrawlerProcess(get_project_settings())
-    process.crawl(spiders.ownedgamesspider.OwnedGamesSpider, steam_id)
+    process.crawl(spiders.ownedgamesspider.OwnedGameIdsSpider, steam_id)
     process.start()
 
 

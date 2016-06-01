@@ -8,12 +8,12 @@ import astatsscraper.pipelines
 A_STATS_OWNED_GAMES_URL_BASE = 'http://astats.astats.nl/astats/User_Games.php?SPL=0&CTO=0&Limit=0&ToPlay=0&PerfectOnly=0&Hidden=0&AchievementsOnly=0&DisplayType=2&GTF=0&SteamID64='
 
 
-class OwnedGamesSpider(scrapy.Spider):
+class OwnedGameIdsSpider(scrapy.Spider):
     name = 'OwnedGamesSpider'
     pipeline = [astatsscraper.pipelines.AppOwnerPipeline]
 
     def __init__(self, steam_id, *args, **kwargs):
-        super(OwnedGamesSpider, self).__init__(*args, **kwargs)
+        super(OwnedGameIdsSpider, self).__init__(*args, **kwargs)
 
         self.start_urls = [A_STATS_OWNED_GAMES_URL_BASE + str(steam_id)]
 
