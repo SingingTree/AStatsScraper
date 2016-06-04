@@ -123,13 +123,25 @@ class Persistor:
         self.connection.commit()
 
     def get_all_app_ids(self):
-        self.cursor.execute('SELECT app_id FROM owned_apps')
+        self.cursor.execute('SELECT app_id FROM steam_apps;')
+        values = self.cursor.fetchall()
+        ids = [id for (id,) in values]
+        return ids
+
+    def get_app_ids_for_unknown_points(self):
+        self.cursor.execute('SELECT app_id FROM steam_apps where total_points IS NULL;')
+        values = self.cursor.fetchall()
+        ids = [id for (id,) in values]
+        return ids
+
+    def get_app_ids_for_apps_with_points(self):
+        self.cursor.execute('SELECT app_id FROM steam_apps where total_points > 0;')
         values = self.cursor.fetchall()
         ids = [id for (id,) in values]
         return ids
 
     def get_owned_app_ids(self, owner_id):
-        self.cursor.execute('SELECT app_id FROM owned_apps WHERE steam_id=?', (owner_id,))
+        self.cursor.execute('SELECT app_id FROM owned_apps WHERE steam_id=?;', (owner_id,))
         values = self.cursor.fetchall()
         ids = [id for (id,) in values]
         return ids
