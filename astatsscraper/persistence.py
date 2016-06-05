@@ -7,7 +7,6 @@ class Persistor:
     def __enter__(self):
         self.connection = sqlite3.connect('astatsscraper.db')
         self.cursor = self.connection.cursor()
-        # Maybe find a better way than ensuring each time
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):

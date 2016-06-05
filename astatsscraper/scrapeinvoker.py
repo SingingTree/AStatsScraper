@@ -39,8 +39,8 @@ def scrape_owned_games(steam_id):
         scrape_steam_apps(persistor.get_owned_app_ids(steam_id))
 
 
-def scrape_all_games():
-    """Scrapes all games from astats."""
+def scrape_all_game_ids():
+    """Scrapes all game ids from astats."""
     process = CrawlerProcess(get_project_settings())
     process.crawl(spiders.allappidsspider.AllAppIdsSpider)
     process.start()
