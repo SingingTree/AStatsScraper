@@ -144,3 +144,8 @@ class Persistor:
         values = self.cursor.fetchall()
         ids = [id for (id,) in values]
         return ids
+
+    def get_owned_app_info(self, owner_id):
+        self.cursor.execute('SELECT app_id FROM owned_apps WHERE steam_id=?;', (owner_id,))
+        values = self.cursor.fetchall()
+        return values
