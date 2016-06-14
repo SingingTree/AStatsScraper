@@ -139,6 +139,12 @@ class Persistor:
         ids = [id for (id,) in values]
         return ids
 
+    def get_app_ids_sorted_by_points_per_time(self):
+        self.cursor.execute('SELECT app_id FROM steam_apps ORDER BY points_per_time DESC;')
+        values = self.cursor.fetchall()
+        ids = [id for (id,) in values]
+        return ids
+
     def get_owned_app_ids(self, owner_id):
         self.cursor.execute('SELECT app_id FROM owned_apps WHERE steam_id=?;', (owner_id,))
         values = self.cursor.fetchall()
