@@ -158,6 +158,6 @@ class Persistor:
 
     def get_all_apps_info(self):
         self.cursor.execute('SELECT app_id, title, time_to_100, total_points, points_per_time, num_players, '
-                            'num_players_to_100, percentage_of_players_to_100, last_updated FROM owned_apps')
+                            'num_players_to_100, percentage_of_players_to_100, last_updated FROM steam_apps')
         values = self.cursor.fetchall()
         return values
