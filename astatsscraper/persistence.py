@@ -151,13 +151,27 @@ class Persistor:
         ids = [id for (id,) in values]
         return ids
 
-    def get_owned_app_info(self, owner_id):
-        self.cursor.execute('SELECT app_id FROM owned_apps WHERE steam_id=?;', (owner_id,))
+    def get_owned_app_info(self, owner_id, order_by=None, asc_desc=None):
+        query_string = 'SELECT app_id, title, time_to_100, total_points, points_per_time, num_players, ' \
+                       'num_players_to_100, percentage_of_players_to_100, last_updated FROM steam_apps ' \
+                       'WHERE steam_id={}'.format(owner_id)
+        if order_by:
+            query_string += ' ORDER BY {}'.format(order_by)
+        if asc_desc:
+            query_string += ' {}'.format(asc_desc)
+        query_string += ';'
+        self.cursor.execute(query_string)
         values = self.cursor.fetchall()
         return values
 
-    def get_all_apps_info(self):
-        self.cursor.execute('SELECT app_id, title, time_to_100, total_points, points_per_time, num_players, '
-                            'num_players_to_100, percentage_of_players_to_100, last_updated FROM steam_apps')
+    def get_all_apps_info(self, order_by=None, asc_desc=None):
+        query_string = 'SELECT app_id, title, time_to_100, total_points, points_per_time, num_players, ' \
+                       'num_players_to_100, percentage_of_players_to_100, last_updated FROM steam_apps'
+        if order_by:
+            query_string += ' ORDER BY {}'.format(order_by)
+        if asc_desc:
+            query_string += ' {}'.format(asc_desc)
+        query_string += ';'
+        self.cursor.execute(query_string)
         values = self.cursor.fetchall()
         return values
