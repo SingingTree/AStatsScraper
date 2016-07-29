@@ -5,8 +5,11 @@
     <script type=text/javascript src="{{ url_for('static', filename='jquery-2.2.3.min.js') }}"></script>
     <script type=text/javascript src="{{ url_for('static', filename='DataTables-1.10.12/js/jquery.dataTables.min.js') }}"></script>
     <script type="text/javascript" class="init">
+    var data = {{ apps_info_json | safe }};
     $(document).ready(function() {
-      $('#GameTable').DataTable();
+      $('#GameTable').DataTable( {
+        data: data
+      } );
     });
     </script>
 </head>
@@ -26,13 +29,6 @@
     </tr>
     </thead>
     <tbody>
-    {% for app_info in apps_info %}
-    <tr>
-        {% for info_item in app_info %}
-        <td>{{ info_item }}</td>
-        {% endfor %}
-    </tr>
-    {% endfor %}
     </tbody>
 </table>
 </body>
