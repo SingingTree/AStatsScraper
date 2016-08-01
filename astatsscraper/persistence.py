@@ -152,9 +152,10 @@ class Persistor:
         return ids
 
     def get_owned_app_info(self, owner_id, order_by=None, asc_desc=None):
-        query_string = 'SELECT app_id, title, time_to_100, total_points, points_per_time, num_players, ' \
-                       'num_players_to_100, percentage_of_players_to_100, last_updated FROM steam_apps ' \
-                       'WHERE steam_id={}'.format(owner_id)
+        query_string = 'SELECT steam_apps.app_id, title, time_to_100, total_points, points_per_time, num_players, ' \
+                       'num_players_to_100, percentage_of_players_to_100, steam_apps.last_updated FROM steam_apps ' \
+                       'INNER JOIN owned_apps ON steam_apps.app_id = owned_apps.app_id WHERE owned_apps.steam_id = ' \
+                       '{}'.format(owner_id)
         if order_by:
             query_string += ' ORDER BY {}'.format(order_by)
         if asc_desc:
