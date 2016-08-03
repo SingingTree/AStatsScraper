@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Games</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='DataTables-1.10.12/css/jquery.dataTables.min.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='datatables.min.css') }}"/>
     <script type=text/javascript src="{{ url_for('static', filename='jquery-2.2.3.min.js') }}"></script>
-    <script type=text/javascript src="{{ url_for('static', filename='DataTables-1.10.12/js/jquery.dataTables.min.js') }}"></script>
+    <script type=text/javascript src="{{ url_for('static', filename='datatables.min.js') }}"></script>
     <script type="text/javascript" class="init">
     var data = {{ apps_info_json | safe }};
     $(document).ready(function() {
       $('#GameTable').DataTable( {
+        fixedHeader: true,
         data: data
       } );
     });
