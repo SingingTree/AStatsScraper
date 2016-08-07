@@ -7,12 +7,29 @@
     <script type=text/javascript src="{{ url_for('static', filename='jquery-2.2.3.min.js') }}"></script>
     <script type=text/javascript src="{{ url_for('static', filename='datatables.min.js') }}"></script>
     <script type="text/javascript" class="init">
+    function setupTextSearch(th) {
+        $(th).html("TextSearch");
+    }
+
+    function setupNumericSearch(th) {
+        $(th).html("NumericSearch");
+    }
+
     var data = {{ apps_info_json | safe }};
     $(document).ready(function() {
-      $('#GameTable').DataTable( {
-        fixedHeader: true,
-        data: data
-      } );
+        var table = $('#GameTable').DataTable({
+            fixedHeader: true,
+            "orderCellsTop": true, // Top cell in header is used to sort
+            data: data
+        });
+
+        var secondHeaderRow = $('#GameTable tr').eq(1);
+        $('th.NumericSearch', secondHeaderRow).each( function () {
+            setupNumericSearch(this);
+        });
+        $('th.TextSearch', secondHeaderRow).each( function () {
+            setupTextSearch(this);
+        });
     });
     </script>
 </head>
@@ -29,6 +46,17 @@
         <th># Players to 100%</th>
         <th>% Players to 100%</th>
         <th>Last Updated</th>
+    </tr>
+    <tr>
+        <th class="NumericSearch">App Id</th>
+        <th class="TextSearch">Title</th>
+        <th class="NumericSearch">Time to 100%</th>
+        <th class="NumericSearch">Total Points</th>
+        <th class="NumericSearch">Points Per Time</th>
+        <th class="NumericSearch"># Players</th>
+        <th class="NumericSearch"># Players to 100%</th>
+        <th class="NumericSearch">% Players to 100%</th>
+        <th class="TextSearch">Last Updated</th>
     </tr>
     </thead>
     <tbody>
