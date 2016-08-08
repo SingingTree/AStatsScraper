@@ -8,11 +8,29 @@
     <script type=text/javascript src="{{ url_for('static', filename='datatables.min.js') }}"></script>
     <script type="text/javascript" class="init">
     function setupTextSearch(th) {
-        $(th).html("TextSearch");
+        $(th).html('<input type="text"\>');
     }
 
     function setupNumericSearch(th) {
-        $(th).html("NumericSearch");
+        $(th).html('<div>' +
+                   '<select>' +
+                        '<option value="lt">\<</option>' +
+                        '<option value="eq">\=</option>' +
+                        '<option value="gt">\></option>' +
+                   '</select>' +
+                   '<input type="number"\>' +
+                   '</div>');
+    }
+
+    function setupDateSearch(th) {
+        $(th).html('<div>' +
+                   '<select>' +
+                        '<option value="lt">\<</option>' +
+                        '<option value="eq">\=</option>' +
+                        '<option value="gt">\></option>' +
+                   '</select>' +
+                   '<input type="date"\>' +
+                   '</div>');
     }
 
     var data = {{ apps_info_json | safe }};
@@ -23,12 +41,14 @@
             data: data
         });
 
-        var secondHeaderRow = $('#GameTable tr').eq(1);
-        $('th.NumericSearch', secondHeaderRow).each( function () {
+        $('th.NumericSearch').each( function () {
             setupNumericSearch(this);
         });
-        $('th.TextSearch', secondHeaderRow).each( function () {
+        $('th.TextSearch').each( function () {
             setupTextSearch(this);
+        });
+        $('th.DateSearch').each( function () {
+            setupDateSearch(this);
         });
     });
     </script>
@@ -56,7 +76,7 @@
         <th class="NumericSearch"># Players</th>
         <th class="NumericSearch"># Players to 100%</th>
         <th class="NumericSearch">% Players to 100%</th>
-        <th class="TextSearch">Last Updated</th>
+        <th class="DateSearch">Last Updated</th>
     </tr>
     </thead>
     <tbody>
