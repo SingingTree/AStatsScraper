@@ -7,11 +7,11 @@
     <script type=text/javascript src="{{ url_for('static', filename='jquery-2.2.3.min.js') }}"></script>
     <script type=text/javascript src="{{ url_for('static', filename='datatables.min.js') }}"></script>
     <script type="text/javascript" class="init">
-    function setupTextSearch(th) {
+    function setupTextSearch (th) {
         $(th).html('<input type="text"\>');
     }
 
-    function setupNumericSearch(th) {
+    function setupNumericSearch (th) {
         $(th).html('<div>' +
                    '<select>' +
                         '<option value="lt">\<</option>' +
@@ -22,7 +22,7 @@
                    '</div>');
     }
 
-    function setupDateSearch(th) {
+    function setupDateSearch (th) {
         $(th).html('<div>' +
                    '<select>' +
                         '<option value="lt">\<</option>' +
@@ -41,14 +41,17 @@
             data: data
         });
 
-        $('th.NumericSearch').each( function () {
-            setupNumericSearch(this);
-        });
-        $('th.TextSearch').each( function () {
-            setupTextSearch(this);
-        });
-        $('th.DateSearch').each( function () {
-            setupDateSearch(this);
+        // Setup all the search fields
+        $('#FilterRow').find('> th').each ( function (i, th) {
+            if ($(th).hasClass('NumericSearch')) {
+                setupNumericSearch(th);
+            }
+            if ($(th).hasClass('TextSearch')) {
+                setupTextSearch(th);
+            }
+            if ($(th).hasClass('DateSearch')) {
+                setupDateSearch(th);
+            }
         });
     });
     </script>
@@ -67,7 +70,7 @@
         <th>% Players to 100%</th>
         <th>Last Updated</th>
     </tr>
-    <tr>
+    <tr id="FilterRow">
         <th class="NumericSearch">App Id</th>
         <th class="TextSearch">Title</th>
         <th class="NumericSearch">Time to 100%</th>
