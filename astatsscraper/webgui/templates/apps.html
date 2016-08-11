@@ -10,8 +10,18 @@
 
     var data = {{ apps_info_json | safe }};
     $(document).ready(function() {
-        function setupTextSearch (th) {
+        function setupTextSearch (th, colNum) {
             $(th).html('<input type="text"\>');
+            var input = $(th).find('input');
+            input.keyup( function () {
+                table.draw();
+            });
+
+            $.fn.dataTable.ext.search.push(
+                function(settings, data, dataIndex) {
+                    return data[colNum].toLowerCase().indexOf(input.val().toLowerCase()) > -1;
+                }
+            );
         }
 
         function setupNumericSearch (th, colNum) {
@@ -52,7 +62,7 @@
             );
         }
 
-        function setupDateSearch (th) {
+        function setupDateSearch (th, colNum) {
             $(th).html('<div>' +
                        '<select>' +
                             '<option value="lt">\<</option>' +
@@ -75,7 +85,7 @@
                 setupNumericSearch(th, i);
             }
             if ($(th).hasClass('TextSearch')) {
-                setupTextSearch(th);
+                setupTextSearch(th, i);
             }
             if ($(th).hasClass('DateSearch')) {
                 setupDateSearch(th);
