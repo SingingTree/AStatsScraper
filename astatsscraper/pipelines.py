@@ -28,3 +28,8 @@ class SteamAppPipeline(object):
             return item
         else:
             return item
+
+
+class SteamPoweredAppPagePipeline(object):
+    def process_item(self, item, spider):
+        pass
