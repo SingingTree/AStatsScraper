@@ -73,7 +73,7 @@ class Persistor:
 
     def store_ownership(self, owned_app_item):
         self.cursor.execute('''INSERT OR IGNORE INTO steam_apps (app_id, title, time_to_100, total_points,
-                               points_per_time, num_players, num_player_to_100, last_updated)
+                               points_per_time, num_players, num_players_to_100, last_updated)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?);''',
                             (
                                 owned_app_item.get('app_id'),
@@ -155,7 +155,7 @@ class Persistor:
         query_string = 'SELECT steam_apps.app_id, title, time_to_100, total_points, points_per_time, num_players, ' \
                        'num_players_to_100, percentage_of_players_to_100, steam_apps.last_updated FROM steam_apps ' \
                        'INNER JOIN owned_apps ON steam_apps.app_id = owned_apps.app_id WHERE owned_apps.steam_id = ?'
-        query_params = (owner_id)
+        query_params = (owner_id,)
         if order_by:
             query_string += ' ORDER BY ?'
             if asc_desc:
