@@ -90,3 +90,16 @@ def parse_owned_games_for_apps(response):
                 # Find number achieved out of total
                 'number_achieved': number_achieved
             })
+
+
+def parse_steam_powered_app_page(response):
+    """Find ratings on steam powered pages and extract the percentage value, stripping the '%' char."""
+    item = {}
+    review_text = response.xpath('//div[@class="user_reviews"]/div[@class="user_reviews_summary_row"]/@data-store-tooltip')
+    if len(review_text) == 2:
+        item['recent_rating'] = review_text[0].extract().split(' ')[0].strip('%')
+        item['overall_rating'] = review_text[1].extract().split(' ')[0].strip('%')
+    else:
+        item['recent_rating'] = None
+        item['overall_rating'] = review_text[0].extract().split(' ')[0].strip('%')
+    yield item

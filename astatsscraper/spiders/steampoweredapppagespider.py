@@ -1,4 +1,5 @@
 import scrapy
+import astatsscraper.parsing
 import astatsscraper.pipelines
 
 # Info on spiders with args:
@@ -19,4 +20,4 @@ class SteamPoweredAppPageSpider(scrapy.Spider):
             self.start_urls = [STEAM_POWERED_APP_URL_BASE + str(app_ids)]
 
     def parse(self, response):
-        pass
+        return astatsscraper.parsing.parse_steam_powered_app_page(response)

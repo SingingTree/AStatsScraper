@@ -3,6 +3,7 @@ from scrapy.utils.project import get_project_settings
 import spiders.ownedgamesspider
 import spiders.steamappspider
 import spiders.allappidsspider
+import spiders.steampoweredapppagespider
 import persistence
 
 
@@ -43,4 +44,15 @@ def scrape_all_game_ids():
     """Scrapes all game ids from astats."""
     process = CrawlerProcess(get_project_settings())
     process.crawl(spiders.allappidsspider.AllAppIdsSpider)
+    process.start()
+
+
+def scrape_steam_powered_app_pages(app_ids):
+    """Scrapes a steampowered.com for information.
+
+    Args:
+         app_ids (str | int | List[str] | List[int]): one or more app ids to scrape.
+    """
+    process = CrawlerProcess(get_project_settings())
+    process.crawl(spiders.steampoweredapppagespider.SteamPoweredAppPageSpider, app_ids)
     process.start()

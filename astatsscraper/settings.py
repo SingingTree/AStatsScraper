@@ -4,7 +4,8 @@ NEWSPIDER_MODULE = 'astatsscraper.spiders'
 ITEM_PIPELINES = {
     'astatsscraper.pipelines.SteamAppPipeline': 0,
     'astatsscraper.pipelines.AppIdOnlyPipeline': 2,
-    'astatsscraper.pipelines.AppOwnerPipeline': 3
+    'astatsscraper.pipelines.AppOwnerPipeline': 3,
+    'astatsscraper.pipelines.SteamPoweredAppPagePipeline': 4
 }
 
 DOWNLOADER_MIDDLEWARES = {

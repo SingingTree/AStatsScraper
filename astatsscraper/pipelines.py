@@ -32,4 +32,7 @@ class SteamAppPipeline(object):
 
 class SteamPoweredAppPagePipeline(object):
     def process_item(self, item, spider):
-        pass
+        if self.__class__ in spider.pipeline:
+            return item
+        else:
+            return item
