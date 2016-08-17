@@ -34,7 +34,7 @@ def parse_app_page(response):
     else:
         num_players_to_hundo = int(num_players_to_hundo.strip())
 
-    yield items.SteamappItem({
+    yield items.AstatsSteamappItem({
         'id': app_id,
         'title': title,
         'time_to_100': time_to_hundo,
@@ -48,7 +48,7 @@ def parse_search_result_for_apps(response):
     for href in response.xpath('//table//table//a/@href'):
         relative_url = href.extract()
         if relative_url.startswith('Steam_Game_Info.php?AppID='):
-            yield items.SteamappItem({
+            yield items.AstatsSteamappItem({
                 'id': relative_url[len('Steam_Game_Info.php?AppID='):]
             })
 
@@ -94,12 +94,14 @@ def parse_owned_games_for_apps(response):
 
 def parse_steam_powered_app_page(response):
     """Find ratings on steam powered pages and extract the percentage value, stripping the '%' char."""
-    item = {}
     review_text = response.xpath('//div[@class="user_reviews"]/div[@class="user_reviews_summary_row"]/@data-store-tooltip')
     if len(review_text) == 2:
-        item['recent_rating'] = review_text[0].extract().split(' ')[0].strip('%')
-        item['overall_rating'] = review_text[1].extract().split(' ')[0].strip('%')
+        recent_rating = int(review_text[0].extract().split(' ')[0].strip('%'))
+        overall_rating = int(review_text[1].extract().split(' ')[0].strip('%'))
     else:
-        item['recent_rating'] = None
-        item['overall_rating'] = review_text[0].extract().split(' ')[0].strip('%')
-    yield item
+        recent_rating = None
+        overall_rating = int(review_text[0].extract().split(' ')[0].strip('%'))
+    yield items.SteampoweredSteamappItem ({
+        'recent_rating': recent_rating,
+        'overall_rating': overall_rating
+    })
