@@ -3,10 +3,29 @@ import sqlalchemy
 import sqlalchemy.ext.declarative
 import sqlalchemy.orm
 import datetime
+import json
 
 Base = sqlalchemy.ext.declarative.declarative_base()
 
-class SteamApp(Base):
+def dump_item_to_list(item):
+    data = []
+    for column in item.__table__.columns:
+        data.append(getattr(item, column.name))
+    return data
+
+def dump_item_to_unicode_list(item):
+    # None elems are left blank
+    return [unicode(elem) if elem else u'' for elem in dump_item_to_list(item)]
+
+
+class ToListMixin():
+    def to_list(self):
+        return dump_item_to_list(self)
+
+    def to_unicode_list(self):
+        return dump_item_to_unicode_list(self)
+
+class SteamApp(Base, ToListMixin):
     __tablename__ = 'steam_apps'
 
     app_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
@@ -23,14 +42,14 @@ class SteamApp(Base):
     steampowered_last_updated = sqlalchemy.Column(sqlalchemy.DateTime)
 
 
-class User(Base):
+class User(Base, ToListMixin):
     __tablename__ = 'users'
 
     steam_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     last_updated = sqlalchemy.Column(sqlalchemy.DateTime)
 
 
-class OwnedApp(Base):
+class OwnedApp(Base, ToListMixin):
     __tablename__ = 'owned_apps'
 
     steam_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.steam_id', primary_key=True))
