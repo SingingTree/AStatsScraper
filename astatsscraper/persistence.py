@@ -15,7 +15,7 @@ def dump_item_to_list(item):
 
 def dump_item_to_unicode_list(item):
     # None elems are left blank
-    return [unicode(elem) if elem else u'' for elem in dump_item_to_list(item)]
+    return [u'' if elem is None else unicode(elem) for elem in dump_item_to_list(item)]
 
 
 class ToListMixin():

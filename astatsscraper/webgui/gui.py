@@ -11,7 +11,7 @@ def index():
 def all_games():
     steam_id = request.args.get('steam_id')
     with Persistor() as persistor:
-        if steam_id == None:
+        if steam_id is None:
             apps_info = persistor.get_all_apps_info()
         else:
             apps_info = persistor.get_owned_app_info(steam_id)
