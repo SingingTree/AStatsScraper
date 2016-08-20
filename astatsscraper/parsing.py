@@ -4,7 +4,7 @@ import items
 
 def parse_app_page(response):
     # Extract app id from URL
-    app_id = response.url[len('http://astats.astats.nl/astats/Steam_Game_Info.php?AppID='):]
+    app_id = int(response.url[len('http://astats.astats.nl/astats/Steam_Game_Info.php?AppID='):])
     # Should always be able to grab a title
     title = response.xpath('//div[@class = "panel panel-default panel-gameinfo"]/div[@class = "panel-heading"]/text()').extract_first().strip()
     # TIme may or may not be present
@@ -14,6 +14,7 @@ def parse_app_page(response):
     else:
         # If time is present parse it to a float
         time_to_hundo = time_to_hundo.extract_first().strip()
+        time_to_hundo = time_to_hundo.replace('.', '')
         time_to_hundo = time_to_hundo.replace(',', '.')
         time_to_hundo = float(time_to_hundo)
     # Points may or may not be present, default to 0 if absent
@@ -35,7 +36,7 @@ def parse_app_page(response):
         num_players_to_hundo = int(num_players_to_hundo.strip())
 
     yield items.AstatsSteamappItem({
-        'id': app_id,
+        'app_id': app_id,
         'title': title,
         'time_to_100': time_to_hundo,
         'total_points': points,
@@ -49,7 +50,7 @@ def parse_search_result_for_apps(response):
         relative_url = href.extract()
         if relative_url.startswith('Steam_Game_Info.php?AppID='):
             yield items.AstatsSteamappItem({
-                'id': relative_url[len('Steam_Game_Info.php?AppID='):]
+                'app_id': relative_url[len('Steam_Game_Info.php?AppID='):]
             })
 
 
@@ -79,7 +80,7 @@ def parse_owned_games_for_apps(response):
         href = table_cell.xpath('tr/a/@href')
         relative_url = href.extract_first()
         owner_id = relative_url[relative_url.find(relative_url_owner_prefix) + len('SteamID64='):]
-        app_id = relative_url[len(relative_url_app_prefix):relative_url.find(relative_url_owner_prefix) - 1]
+        app_id = int(relative_url[len(relative_url_app_prefix):relative_url.find(relative_url_owner_prefix) - 1])
         if relative_url.startswith(relative_url_app_prefix):
             yield items.OwnedAppItem({
                 'owner_id': owner_id,
