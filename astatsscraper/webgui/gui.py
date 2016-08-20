@@ -16,3 +16,6 @@ def all_games():
         else:
             app_info = persistor.get_owned_app_info(steam_id)
         return render_template('apps.html', apps_info_json=json.dumps(app_info))
+
+if __name__ == '__main__':
+    app.run()
