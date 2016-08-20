@@ -7,7 +7,7 @@ import spiders.steampoweredapppagespider
 import persistence
 
 
-def scrape_game_ownership(steam_id):
+def scrape_app_ownership(steam_id):
     """Scrapes all games owned by a user and stores ownership info in the database via pipeline. Note this will
     not scrape detailed game information, just what can be found on a users ownership page.
 
@@ -30,7 +30,7 @@ def scrape_steam_apps(app_ids):
     process.start()
 
 
-def scrape_owned_games(steam_id):
+def scrape_owned_apps(steam_id):
     """Scrapes all owned games for a user as reported by querying the database.
 
     Args:
@@ -38,6 +38,12 @@ def scrape_owned_games(steam_id):
     """
     with persistence.Persistor() as persistor:
         scrape_steam_apps(persistor.get_owned_app_ids(steam_id))
+
+
+def scrape_apps_with_unknown_points():
+    """Scrapes all games in database with unknown point values"""
+    with persistence.Persistor() as persistor:
+        scrape_steam_apps(persistor.get_app_ids_for_unknown_points())
 
 
 def scrape_all_game_ids():
