@@ -1,6 +1,7 @@
 import scrapy
 import urlparse
 import items
+import re
 
 def parse_app_page(response):
     # Extract app id from URL
@@ -95,6 +96,13 @@ def parse_owned_games_for_apps(response):
 
 def parse_steam_powered_app_page(response):
     """Find ratings on steam powered pages and extract the percentage value, stripping the '%' char."""
+    app_id_re = re.compile(r'[/](\d+)[/]?$')
+    matches = app_id_re.search(response.url)
+    if matches:
+        app_id = int(matches.group(1))
+    else:
+        print("Couldn't find app id in: " + response.url)
+        return
     review_text = response.xpath('//div[@class="user_reviews"]/div[@class="user_reviews_summary_row"]/@data-store-tooltip')
     if len(review_text) == 2:
         recent_rating = int(review_text[0].extract().split(' ')[0].strip('%'))
@@ -102,7 +110,8 @@ def parse_steam_powered_app_page(response):
     else:
         recent_rating = None
         overall_rating = int(review_text[0].extract().split(' ')[0].strip('%'))
-    yield items.SteampoweredSteamappItem ({
+    yield items.SteampoweredSteamappItem({
+        'app_id': app_id,
         'recent_rating': recent_rating,
         'overall_rating': overall_rating
     })

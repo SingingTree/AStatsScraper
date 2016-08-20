@@ -19,5 +19,10 @@ class SteamPoweredAppPageSpider(scrapy.Spider):
         else:
             self.start_urls = [STEAM_POWERED_APP_URL_BASE + str(app_ids)]
 
+    # Set birthtime to pass age gates
+    def start_requests(self):
+        for url in self.start_urls:
+            yield scrapy.Request(url, cookies={'birthtime': '378644401'}, callback=self.parse)
+
     def parse(self, response):
         return astatsscraper.parsing.parse_steam_powered_app_page(response)

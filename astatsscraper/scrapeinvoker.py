@@ -62,3 +62,8 @@ def scrape_steam_powered_app_pages(app_ids):
     process = CrawlerProcess(get_project_settings())
     process.crawl(spiders.steampoweredapppagespider.SteamPoweredAppPageSpider, app_ids)
     process.start()
+
+
+def scrape_steam_powered_owned_app_pages(steam_id):
+    with persistence.Persistor() as persistor:
+        scrape_steam_powered_app_pages(persistor.get_owned_app_ids(steam_id))

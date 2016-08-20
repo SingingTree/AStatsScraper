@@ -95,6 +95,13 @@ class Persistor:
                        )
         self.session.merge(app)
 
+    def store_steampowered_app(self, steampowered_app_item):
+        app = SteamApp(app_id=steampowered_app_item.get('app_id'),
+                       recent_steam_rating=steampowered_app_item.get('recent_rating'),
+                       overall_steam_rating=steampowered_app_item.get('overall_rating')
+                       )
+        self.session.merge(app)
+
     def store_ownership(self, owned_app_item):
         app = SteamApp(app_id=owned_app_item.get('app_id'))
         self.session.merge(app)
