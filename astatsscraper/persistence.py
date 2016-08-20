@@ -6,10 +6,10 @@ import datetime
 
 Base = sqlalchemy.ext.declarative.declarative_base()
 
-class Steamapp(Base):
+class SteamApp(Base):
     __tablename__ = 'steam_apps'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    app_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
     title = sqlalchemy.Column(sqlalchemy.String)
     time_to_100 = sqlalchemy.Column(sqlalchemy.Float)
     total_points = sqlalchemy.Column(sqlalchemy.Float)
@@ -17,27 +17,27 @@ class Steamapp(Base):
     num_players = sqlalchemy.Column(sqlalchemy.Integer)
     num_players_to_100 = sqlalchemy.Column(sqlalchemy.Integer)
     percentage_of_players_to_100 = sqlalchemy.Column(sqlalchemy.Float)
-    astats_last_updated = sqlalchemy.Column(sqlalchemy.Date)
+    astats_last_updated = sqlalchemy.Column(sqlalchemy.DateTime)
     recent_steam_rating = sqlalchemy.Column(sqlalchemy.Integer)
     overall_steam_rating = sqlalchemy.Column(sqlalchemy.Integer)
-    steampowered_last_updated = sqlalchemy.Column(sqlalchemy.Date)
+    steampowered_last_updated = sqlalchemy.Column(sqlalchemy.DateTime)
 
 
 class User(Base):
     __tablename__ = 'users'
 
     steam_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
-    last_updated = sqlalchemy.Column(sqlalchemy.Date)
+    last_updated = sqlalchemy.Column(sqlalchemy.DateTime)
 
 
 class OwnedApp(Base):
     __tablename__ = 'owned_apps'
 
     steam_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.steam_id', primary_key=True))
-    app_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('steamapps.id'), primary_key=True)
+    app_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('steam_apps.app_id'), primary_key=True)
     number_achieved = sqlalchemy.Column(sqlalchemy.Integer)
     percentage_achieved = sqlalchemy.Column(sqlalchemy.Integer)
-    last_updated = sqlalchemy.Column(sqlalchemy.Date)
+    last_updated = sqlalchemy.Column(sqlalchemy.DateTime)
 
 
 class Persistor:
@@ -64,7 +64,7 @@ class Persistor:
             percentage_to_hundo = 0
         else:
             percentage_to_hundo = atats_app_item.get('num_players_to_100') / atats_app_item.get('num_players')
-        app = Steamapp(id=atats_app_item.get('id'),
+        app = SteamApp(app_id=atats_app_item.get('app_id'),
                        title=atats_app_item.get('title'),
                        time_to_100=atats_app_item.get('time_to_100'),
                        total_points=atats_app_item.get('total_points'),
@@ -74,85 +74,60 @@ class Persistor:
                        percentage_of_players_to_100=percentage_to_hundo,
                        astats_last_updated=datetime.datetime.now(),
                        )
-        self.session.add(app)
+        self.session.merge(app)
 
     def store_ownership(self, owned_app_item):
-        app = Steamapp(id=owned_app_item.get('app_id'))
-        self.session.add(app)
+        app = SteamApp(app_id=owned_app_item.get('app_id'))
+        self.session.merge(app)
         user = User(steam_id=owned_app_item.get('owner_id'), last_updated=datetime.datetime.now())
-        self.session.add(user)
+        self.session.merge(user)
         owned_app = OwnedApp(steam_id=owned_app_item.get('owner_id'),
                              app_id=owned_app_item.get('app_id'),
                              number_achieved=owned_app_item.get('number_achieved'),
                              percentage_achieved=owned_app_item.get('percentage_achieved'),
                              last_updated=datetime.datetime.now()
                              )
-        self.session.add(owned_app)
+        self.session.merge(owned_app)
 
 
     def store_app_id(self, app_item):
-        app = Steamapp(id=app_item.get('app_id'))
-        self.session.add(app)
+        app = SteamApp(id=app_item.get('app_id'))
+        self.session.merge(app)
 
     def get_all_app_ids(self):
-        ids = [id for id in self.session.query(Steamapp.id)]
+        ids = [id for id in self.session.query(SteamApp.app_id)]
         return ids
 
     def get_app_ids_for_unknown_points(self):
-        self.cursor.execute('SELECT app_id FROM steam_apps where total_points IS NULL;')
-        values = self.cursor.fetchall()
-        ids = [id for (id,) in values]
+        ids = [id for (id,) in self.session.query(SteamApp.app_id)
+            .filter(SteamApp.total_points == None)]
         return ids
 
     def get_app_ids_for_apps_with_points(self):
-        self.cursor.execute('SELECT app_id FROM steam_apps where total_points > 0;')
-        values = self.cursor.fetchall()
-        ids = [id for (id,) in values]
+        ids = [id for (id,) in self.session.query(SteamApp.app_id)
+            .filter(SteamApp.total_points > None)]
         return ids
 
     def get_app_ids_sorted_by_points_per_time(self):
-        self.cursor.execute('SELECT app_id FROM steam_apps ORDER BY points_per_time DESC;')
-        values = self.cursor.fetchall()
-        ids = [id for (id,) in values]
+        ids = [id for (id,) in self.session.query(SteamApp.app_id)
+            .order_by(SteamApp.points_per_time)]
         return ids
 
     def get_owned_app_ids(self, owner_id):
-        self.cursor.execute('SELECT app_id FROM owned_apps WHERE steam_id=?;', (owner_id,))
-        values = self.cursor.fetchall()
-        ids = [id for (id,) in values]
+        ids = [id for (id,) in self.session.query(OwnedApp.app_id)
+            .filter(OwnedApp.steam_id == owner_id)]
         return ids
 
-    def get_owned_app_info(self, owner_id, order_by=None, asc_desc=None):
-        query_string = 'SELECT steam_apps.app_id, title, time_to_100, total_points, points_per_time, num_players, ' \
-                       'num_players_to_100, percentage_of_players_to_100, steam_apps.astats_last_updated,' \
-                       'recent_steam_rating, general_steam_rating, steampowered_last_updated' \
-                       'FROM steam_apps INNER JOIN owned_apps ON steam_apps.app_id = owned_apps.app_id WHERE ' \
-                       'owned_apps.steam_id = ?'
-        query_params = (owner_id,)
+    def get_owned_app_info(self, owner_id, order_by=None):
+        query = self.session.query(SteamApp)\
+            .filter(SteamApp.app_id == OwnedApp.app_id)\
+            .filter(OwnedApp.steam_id == owner_id)
         if order_by:
-            query_string += ' ORDER BY ?'
-            if asc_desc:
-                query_params = (order_by + ' ' + asc_desc,)
-            else:
-                query_params = (order_by,)
-        query_string += ';'
+            query.order_by(order_by)
+        return query.all()
 
-        self.cursor.execute(query_string, query_params)
-        values = self.cursor.fetchall()
-        return values
-
-    def get_all_apps_info(self, order_by=None, asc_desc=None):
-        query_string = 'SELECT app_id, title, time_to_100, total_points, points_per_time, num_players, ' \
-                       'num_players_to_100, percentage_of_players_to_100, astats_last_updated, recent_steam_rating,' \
-                       'general_steam_rating, steampowered_last_updated FROM steam_apps'
-        query_params = ()
+    def get_all_apps_info(self, order_by=None):
+        query = self.session.query(SteamApp)
         if order_by:
-            query_string += ' ORDER BY ?'
-            if asc_desc:
-                query_params = (order_by + ' ' + asc_desc,)
-            else:
-                query_params = (order_by,)
-        query_string += ';'
-        self.cursor.execute(query_string, query_params)
-        values = self.cursor.fetchall()
-        return values
+            query.order_by(order_by)
+        return query.all()

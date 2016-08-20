@@ -2,7 +2,7 @@ import scrapy
 
 
 class AstatsSteamappItem(scrapy.Item):
-    id = scrapy.Field()
+    app_id = scrapy.Field()
     title = scrapy.Field()
     time_to_100 = scrapy.Field()
     total_points = scrapy.Field()
@@ -11,7 +11,7 @@ class AstatsSteamappItem(scrapy.Item):
 
 
 class SteampoweredSteamappItem(scrapy.Item):
-    id = scrapy.Field()
+    app_id = scrapy.Field()
     recent_rating = scrapy.Field()
     overall_rating = scrapy.Field()
 
