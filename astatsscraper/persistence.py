@@ -1,6 +1,43 @@
 from __future__ import division
-import sqlite3
+import sqlalchemy
+import sqlalchemy.ext.declarative
+import sqlalchemy.orm
 import datetime
+
+Base = sqlalchemy.ext.declarative.declarative_base()
+
+class Steamapp(Base):
+    __tablename__ = 'steam_apps'
+
+    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    title = sqlalchemy.Column(sqlalchemy.String)
+    time_to_100 = sqlalchemy.Column(sqlalchemy.Float)
+    total_points = sqlalchemy.Column(sqlalchemy.Float)
+    points_per_time = sqlalchemy.Column(sqlalchemy.Float)
+    num_players = sqlalchemy.Column(sqlalchemy.Integer)
+    num_players_to_100 = sqlalchemy.Column(sqlalchemy.Integer)
+    percentage_of_players_to_100 = sqlalchemy.Column(sqlalchemy.Float)
+    astats_last_updated = sqlalchemy.Column(sqlalchemy.Date)
+    recent_steam_rating = sqlalchemy.Column(sqlalchemy.Integer)
+    overall_steam_rating = sqlalchemy.Column(sqlalchemy.Integer)
+    steampowered_last_updated = sqlalchemy.Column(sqlalchemy.Date)
+
+
+class User(Base):
+    __tablename__ = 'users'
+
+    steam_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True)
+    last_updated = sqlalchemy.Column(sqlalchemy.Date)
+
+
+class OwnedApp(Base):
+    __tablename__ = 'owned_apps'
+
+    steam_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('users.steam_id', primary_key=True))
+    app_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('steamapps.id'), primary_key=True)
+    number_achieved = sqlalchemy.Column(sqlalchemy.Integer)
+    percentage_achieved = sqlalchemy.Column(sqlalchemy.Integer)
+    last_updated = sqlalchemy.Column(sqlalchemy.Date)
 
 
 class Persistor:
@@ -8,52 +45,13 @@ class Persistor:
         self.db_name = db_name
 
     def __enter__(self):
-        self.connection = sqlite3.connect(self.db_name)
-        self.cursor = self.connection.cursor()
-        self.ensure_tables()
+        self.engine = sqlalchemy.create_engine('sqlite:///{}'.format(self.db_name))
+        self.session = sqlalchemy.orm.sessionmaker(bind=self.engine)()
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.cursor.close()
-        self.connection.close()
-
-    def ensure_tables(self):
-        # Make sure tables are present
-        self.cursor.execute('''SELECT name FROM sqlite_master WHERE type = "table";''')
-        tables = [table for (table,) in self.cursor.fetchall()]
-        if 'users' in tables and 'owned_apps' in tables and 'steam_apps' in tables:
-            return
-
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS steam_apps(
-                                 app_id INTEGER,
-                                 title VARCHAR(255),
-                                 time_to_100 FLOAT,
-                                 total_points FLOAT,
-                                 points_per_time FLOAT,
-                                 num_players INTEGER,
-                                 num_players_to_100 INTEGER,
-                                 percentage_of_players_to_100 FLOAT,
-                                 astats_last_updated DATE,
-                                 recent_steam_rating INTEGER,
-                                 general_steam_rating INTEGER,
-                                 steampowered_last_updated DATE,
-                                 PRIMARY KEY (app_id)
-                               );''')
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS users(
-                                 steam_id INTEGER,
-                                 last_updated DATE,
-                                 PRIMARY KEY (steam_id)
-                               );''')
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS owned_apps(
-                                 steam_id INTEGER,
-                                 app_id INTEGER,
-                                 number_achieved INTEGER,
-                                 percentage_achieved INTEGER,
-                                 last_updated DATE,
-                                 PRIMARY KEY (steam_id, app_id),
-                                 FOREIGN KEY (steam_id) REFERENCES users(steam_id),
-                                 FOREIGN KEY (app_id) REFERENCES steam_apps(app_id)
-                               );''')
+        self.session.commit()
+        self.session.close()
 
     def store_astats_app(self, atats_app_item):
         if atats_app_item.get('total_points') == 0:
@@ -66,89 +64,38 @@ class Persistor:
             percentage_to_hundo = 0
         else:
             percentage_to_hundo = atats_app_item.get('num_players_to_100') / atats_app_item.get('num_players')
-        self.cursor.execute('''INSERT OR REPLACE INTO steam_apps (app_id, title, time_to_100, total_points,
-                               points_per_time, num_players, num_players_to_100, percentage_of_players_to_100,
-                               astats_last_updated, recent_steam_rating, general_steam_rating,
-                               steampowered_last_updated)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);''',
-                            (
-                                atats_app_item.get('id'),
-                                atats_app_item.get('title'),
-                                atats_app_item.get('time_to_100'),
-                                atats_app_item.get('total_points'),
-                                points_per_time,
-                                atats_app_item.get('num_players'),
-                                atats_app_item.get('num_players_to_100'),
-                                percentage_to_hundo,
-                                datetime.datetime.now(),
-                                None,
-                                None,
-                                None
-                            ))
-        self.connection.commit()
+        app = Steamapp(id=atats_app_item.get('id'),
+                       title=atats_app_item.get('title'),
+                       time_to_100=atats_app_item.get('time_to_100'),
+                       total_points=atats_app_item.get('total_points'),
+                       points_per_time=points_per_time,
+                       num_players=atats_app_item.get('num_players'),
+                       num_players_to_100=atats_app_item.get('num_players_to_100'),
+                       percentage_of_players_to_100=percentage_to_hundo,
+                       astats_last_updated=datetime.datetime.now(),
+                       )
+        self.session.add(app)
 
     def store_ownership(self, owned_app_item):
-        self.cursor.execute('''INSERT OR IGNORE INTO steam_apps (app_id, title, time_to_100, total_points,
-                               points_per_time, num_players, num_players_to_100, astats_last_updated,
-                               recent_steam_rating, general_steam_rating, steampowered_last_updated)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);''',
-                            (
-                                owned_app_item.get('app_id'),
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                datetime.datetime.now(),
-                                None,
-                                None,
-                                None,
-                            ))
-        self.cursor.execute('''INSERT OR REPLACE INTO users (steam_id, last_updated)
-                               VALUES (?, ?);''',
-                            (
-                                owned_app_item.get('owner_id'),
-                                datetime.datetime.now()
-                            ))
-        self.cursor.execute('''INSERT OR REPLACE INTO owned_apps (steam_id, app_id, number_achieved,
-                               percentage_achieved, last_updated)
-                               VALUES (?, ?, ?, ?, ?);''',
-                            (
-                                owned_app_item.get('owner_id'),
-                                owned_app_item.get('app_id'),
-                                owned_app_item.get('number_achieved'),
-                                owned_app_item.get('percentage_achieved'),
-                                datetime.datetime.now(),
-                            ))
-        self.connection.commit()
+        app = Steamapp(id=owned_app_item.get('app_id'))
+        self.session.add(app)
+        user = User(steam_id=owned_app_item.get('owner_id'), last_updated=datetime.datetime.now())
+        self.session.add(user)
+        owned_app = OwnedApp(steam_id=owned_app_item.get('owner_id'),
+                             app_id=owned_app_item.get('app_id'),
+                             number_achieved=owned_app_item.get('number_achieved'),
+                             percentage_achieved=owned_app_item.get('percentage_achieved'),
+                             last_updated=datetime.datetime.now()
+                             )
+        self.session.add(owned_app)
+
 
     def store_app_id(self, app_item):
-        self.cursor.execute('''INSERT OR REPLACE INTO steam_apps (app_id, title, time_to_100, total_points,
-                               points_per_time, num_players, num_players_to_100, percentage_of_players_to_100,
-                               astats_last_updated, recent_steam_rating, general_steam_rating,
-                               steampowered_last_updated)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);''',
-                            (
-                                app_item.get('id'),
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                                None,
-                            ))
-        self.connection.commit()
+        app = Steamapp(id=app_item.get('app_id'))
+        self.session.add(app)
 
     def get_all_app_ids(self):
-        self.cursor.execute('SELECT app_id FROM steam_apps;')
-        values = self.cursor.fetchall()
-        ids = [id for (id,) in values]
+        ids = [id for id in self.session.query(Steamapp.id)]
         return ids
 
     def get_app_ids_for_unknown_points(self):
