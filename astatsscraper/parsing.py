@@ -1,7 +1,8 @@
+from future.moves.urllib.parse import urlparse
 import scrapy
-import urlparse
-import items
 import re
+from .items import *
+
 
 def parse_app_page(response):
     # Extract app id from URL

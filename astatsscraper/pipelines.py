@@ -1,4 +1,5 @@
-import persistence
+from .persistence import *
+
 
 class AppIdOnlyPipeline(object):
     def process_item(self, item, spider):

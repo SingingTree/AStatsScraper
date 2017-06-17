@@ -1,4 +1,6 @@
 from __future__ import division
+from __future__ import unicode_literals
+from builtins import str
 import sqlalchemy
 import sqlalchemy.ext.declarative
 import sqlalchemy.orm
@@ -7,15 +9,17 @@ import json
 
 Base = sqlalchemy.ext.declarative.declarative_base()
 
+
 def dump_item_to_list(item):
     data = []
     for column in item.__table__.columns:
         data.append(getattr(item, column.name))
     return data
 
+
 def dump_item_to_unicode_list(item):
     # None elems are left blank
-    return [u'' if elem is None else unicode(elem) for elem in dump_item_to_list(item)]
+    return ['' if elem is None else str(elem) for elem in dump_item_to_list(item)]
 
 
 class ToListMixin():
@@ -24,6 +28,7 @@ class ToListMixin():
 
     def to_unicode_list(self):
         return dump_item_to_unicode_list(self)
+
 
 class SteamApp(Base, ToListMixin):
     __tablename__ = 'steam_apps'
@@ -115,7 +120,6 @@ class Persistor:
                              )
         self.session.merge(owned_app)
 
-
     def store_app_id(self, app_item):
         app = SteamApp(id=app_item.get('app_id'))
         self.session.merge(app)
@@ -126,7 +130,7 @@ class Persistor:
 
     def get_app_ids_for_unknown_points(self):
         ids = [id for (id,) in self.session.query(SteamApp.app_id)
-            .filter(SteamApp.total_points == None)]
+            .filter(SteamApp.total_points is None)]
         return ids
 
     def get_app_ids_for_apps_with_points(self):
