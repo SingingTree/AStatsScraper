@@ -1,10 +1,10 @@
 from scrapy.crawler import CrawlerProcess
 from scrapy.utils.project import get_project_settings
-import spiders.ownedgamesspider
-import spiders.steamappspider
-import spiders.allappidsspider
-import spiders.steampoweredapppagespider
-import persistence
+from astatsscraper.spiders.ownedgamesspider import OwnedGameIdsSpider
+from astatsscraper.spiders.steamappspider import SteamAppSpider
+from astatsscraper.spiders.allappidsspider import AllAppIdsSpider
+from astatsscraper.spiders.steampoweredapppagespider import SteamPoweredAppPageSpider
+from astatsscraper.persistence import Persistor
 
 
 def scrape_app_ownership(steam_id):
@@ -15,7 +15,7 @@ def scrape_app_ownership(steam_id):
         steam_id (str | int): steam id of the user to scrape ownership for.
     """
     process = CrawlerProcess(get_project_settings())
-    process.crawl(spiders.ownedgamesspider.OwnedGameIdsSpider, steam_id)
+    process.crawl(OwnedGameIdsSpider, steam_id)
     process.start()
 
 
@@ -26,7 +26,7 @@ def scrape_steam_apps(app_ids):
         app_ids (str | int | List[str] | List[int]): one or more app ids to scrape.
     """
     process = CrawlerProcess(get_project_settings())
-    process.crawl(spiders.steamappspider.SteamAppSpider, app_ids)
+    process.crawl(SteamAppSpider, app_ids)
     process.start()
 
 
@@ -36,20 +36,20 @@ def scrape_owned_apps(steam_id):
     Args:
         steam_id (str | int): steam id of the user to scrape ownership for.
     """
-    with persistence.Persistor() as persistor:
+    with Persistor() as persistor:
         scrape_steam_apps(persistor.get_owned_app_ids(steam_id))
 
 
 def scrape_apps_with_unknown_points():
     """Scrapes all games in database with unknown point values"""
-    with persistence.Persistor() as persistor:
+    with Persistor() as persistor:
         scrape_steam_apps(persistor.get_app_ids_for_unknown_points())
 
 
 def scrape_all_game_ids():
     """Scrapes all game ids from astats."""
     process = CrawlerProcess(get_project_settings())
-    process.crawl(spiders.allappidsspider.AllAppIdsSpider)
+    process.crawl(AllAppIdsSpider)
     process.start()
 
 
@@ -60,10 +60,10 @@ def scrape_steam_powered_app_pages(app_ids):
          app_ids (str | int | List[str] | List[int]): one or more app ids to scrape.
     """
     process = CrawlerProcess(get_project_settings())
-    process.crawl(spiders.steampoweredapppagespider.SteamPoweredAppPageSpider, app_ids)
+    process.crawl(SteamPoweredAppPageSpider, app_ids)
     process.start()
 
 
 def scrape_steam_powered_owned_app_pages(steam_id):
-    with persistence.Persistor() as persistor:
+    with Persistor() as persistor:
         scrape_steam_powered_app_pages(persistor.get_owned_app_ids(steam_id))

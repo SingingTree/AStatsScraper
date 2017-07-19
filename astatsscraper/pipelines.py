@@ -1,10 +1,10 @@
-from .persistence import *
+from astatsscraper.persistence import Persistor
 
 
 class AppIdOnlyPipeline(object):
     def process_item(self, item, spider):
         if self.__class__ in spider.pipeline:
-            with persistence.Persistor() as persistor:
+            with Persistor() as persistor:
                 persistor.store_app_id(item)
             return item
         else:
@@ -14,7 +14,7 @@ class AppIdOnlyPipeline(object):
 class AppOwnerPipeline(object):
     def process_item(self, item, spider):
         if self.__class__ in spider.pipeline:
-            with persistence.Persistor() as persistor:
+            with Persistor() as persistor:
                 persistor.store_ownership(item)
             return item
         else:
@@ -24,7 +24,7 @@ class AppOwnerPipeline(object):
 class SteamAppPipeline(object):
     def process_item(self, item, spider):
         if self.__class__ in spider.pipeline:
-            with persistence.Persistor() as persistor:
+            with Persistor() as persistor:
                 persistor.store_astats_app(item)
             return item
         else:
@@ -34,7 +34,7 @@ class SteamAppPipeline(object):
 class SteamPoweredAppPagePipeline(object):
     def process_item(self, item, spider):
         if self.__class__ in spider.pipeline:
-            with persistence.Persistor() as persistor:
+            with Persistor() as persistor:
                 persistor.store_steampowered_app(item)
             return item
         else:

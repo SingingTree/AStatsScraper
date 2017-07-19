@@ -1,7 +1,9 @@
 from future.moves.urllib.parse import urlparse
-import scrapy
 import re
-from .items import *
+import scrapy
+from astatsscraper.items import AstatsSteamappItem
+from astatsscraper.items import OwnedAppItem
+from astatsscraper.items import SteampoweredSteamappItem
 
 
 def parse_app_page(response):
@@ -37,7 +39,7 @@ def parse_app_page(response):
     else:
         num_players_to_hundo = int(num_players_to_hundo.strip())
 
-    yield items.AstatsSteamappItem({
+    yield AstatsSteamappItem({
         'app_id': app_id,
         'title': title,
         'time_to_100': time_to_hundo,
@@ -51,7 +53,7 @@ def parse_search_result_for_apps(response):
     for href in response.xpath('//table//table//a/@href'):
         relative_url = href.extract()
         if relative_url.startswith('Steam_Game_Info.php?AppID='):
-            yield items.AstatsSteamappItem({
+            yield AstatsSteamappItem({
                 'app_id': relative_url[len('Steam_Game_Info.php?AppID='):]
             })
 
@@ -84,7 +86,7 @@ def parse_owned_games_for_apps(response):
         owner_id = relative_url[relative_url.find(relative_url_owner_prefix) + len('SteamID64='):]
         app_id = int(relative_url[len(relative_url_app_prefix):relative_url.find(relative_url_owner_prefix) - 1])
         if relative_url.startswith(relative_url_app_prefix):
-            yield items.OwnedAppItem({
+            yield OwnedAppItem({
                 'owner_id': owner_id,
                 # Find url and trim prefix
                 'app_id': app_id,
@@ -111,7 +113,7 @@ def parse_steam_powered_app_page(response):
     else:
         recent_rating = None
         overall_rating = int(review_text[0].extract().split(' ')[0].strip('%'))
-    yield items.SteampoweredSteamappItem({
+    yield SteampoweredSteamappItem({
         'app_id': app_id,
         'recent_rating': recent_rating,
         'overall_rating': overall_rating
