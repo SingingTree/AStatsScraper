@@ -103,7 +103,8 @@ class Persistor:
     def store_steampowered_app(self, steampowered_app_item):
         app = SteamApp(app_id=steampowered_app_item.get('app_id'),
                        recent_steam_rating=steampowered_app_item.get('recent_rating'),
-                       overall_steam_rating=steampowered_app_item.get('overall_rating')
+                       overall_steam_rating=steampowered_app_item.get('overall_rating'),
+                       steampowered_last_updated=datetime.datetime.now(),
                        )
         self.session.merge(app)
 
