@@ -107,12 +107,20 @@ def parse_steam_powered_app_page(response):
         print("Couldn't find app id in: " + response.url)
         return
     review_text = response.xpath('//div[@class="user_reviews"]/div[@class="user_reviews_summary_row"]/@data-store-tooltip')
+
+    def parse_rating(rating_text):
+        first_word = rating_text.split(' ')[0]
+        if first_word == "Need":
+            # "Need more user reviews to generate a score"
+            return None
+        return int(first_word.strip('%'))
+
     if len(review_text) == 2:
-        recent_rating = int(review_text[0].extract().split(' ')[0].strip('%'))
-        overall_rating = int(review_text[1].extract().split(' ')[0].strip('%'))
+        recent_rating = parse_rating(review_text[0].extract())
+        overall_rating = parse_rating(review_text[1].extract())
     else:
         recent_rating = None
-        overall_rating = int(review_text[0].extract().split(' ')[0].strip('%'))
+        overall_rating = parse_rating(review_text[0].extract())
     yield SteampoweredSteamappItem({
         'app_id': app_id,
         'recent_rating': recent_rating,
