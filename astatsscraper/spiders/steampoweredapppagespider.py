@@ -5,11 +5,11 @@ import astatsscraper.pipelines
 # Info on spiders with args:
 # http://doc.scrapy.org/en/latest/topics/spiders.html#spider-arguments
 
-STEAM_POWERED_APP_URL_BASE = 'http://store.steampowered.com/app/'
+STEAM_POWERED_APP_URL_BASE = 'https://store.steampowered.com/app/'
 
 
 class SteamPoweredAppPageSpider(scrapy.Spider):
-    name = 'SteamAppSpider'
+    name = 'SteamPoweredAppSpider'
     pipeline = [astatsscraper.pipelines.SteamPoweredAppPagePipeline]
 
     def __init__(self, app_ids, steam_id=None, *args, **kwargs):

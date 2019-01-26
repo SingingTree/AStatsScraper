@@ -5,7 +5,7 @@ import astatsscraper.pipelines
 # Info on spiders with args:
 # http://doc.scrapy.org/en/latest/topics/spiders.html#spider-arguments
 
-A_STATS_APP_URL_BASE = 'http://astats.astats.nl/astats/Steam_Game_Info.php?AppID='
+A_STATS_APP_URL_BASE = 'https://astats.astats.nl/astats/Steam_Game_Info.php?AppID='
 
 
 class SteamAppSpider(scrapy.Spider):

@@ -5,7 +5,7 @@ import astatsscraper.pipelines
 # Info on spiders with args:
 # http://doc.scrapy.org/en/latest/topics/spiders.html#spider-arguments
 
-A_STATS_OWNED_GAMES_URL_BASE = 'http://astats.astats.nl/astats/User_Games.php?SPL=0&CTO=0&Limit=0&ToPlay=0&PerfectOnly=0&Hidden=0&AchievementsOnly=0&DisplayType=2&GTF=0&SteamID64='
+A_STATS_OWNED_GAMES_URL_BASE = 'https://astats.astats.nl/astats/User_Games.php?SPL=0&CTO=0&Limit=0&ToPlay=0&PerfectOnly=0&Hidden=0&AchievementsOnly=0&DisplayType=2&GTF=0&SteamID64='
 
 
 class OwnedGameIdsSpider(scrapy.Spider):

@@ -8,7 +8,7 @@ from astatsscraper.items import SteampoweredSteamappItem
 
 def parse_app_page(response):
     # Extract app id from URL
-    app_id = int(response.url[len('http://astats.astats.nl/astats/Steam_Game_Info.php?AppID='):])
+    app_id = int(response.url[len('https://astats.astats.nl/astats/Steam_Game_Info.php?AppID='):])
     # Should always be able to grab a title
     title = response.xpath('//div[@class = "panel panel-default panel-gameinfo"]/div[@class = "panel-heading"]/text()').extract_first().strip()
     # TIme may or may not be present
@@ -106,7 +106,7 @@ def parse_steam_powered_app_page(response):
     else:
         print("Couldn't find app id in: " + response.url)
         return
-    review_text = response.xpath('//div[@class="user_reviews"]/div[@class="user_reviews_summary_row"]/@data-store-tooltip')
+    review_text = response.xpath('//div[@class="user_reviews"]/div[@class="user_reviews_summary_row"]/@data-tooltip-text')
 
     def parse_rating(rating_text):
         first_word = rating_text.split(' ')[0]

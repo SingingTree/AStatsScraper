@@ -1,5 +1,3 @@
-Requires Scrapy
-  - Requires [Visual C++ for Python](http://aka.ms/vcpython27) on Windows
-  - Requires [Pywin32 on](https://sourceforge.net/projects/pywin32/files/) Windows
-Requires [Requests](http://docs.python-requests.org/en/master/user/install/#pip-install-requests)
-Requires [PySide](https://pypi.python.org/pypi/PySide/1.2.4) for GUI
+Scrapes astats and steam pages to collect and computer information on atats points and owned games.
+
+As astats have updated their robots.txt since the original writing of this scraper, it should not be used in its current state in order to respect robots.txt.
